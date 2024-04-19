@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -78,7 +79,7 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setSubject(subject);
             mimeMessageHelper.setText(message);
             FileSystemResource fileSystemResource= new FileSystemResource(file);
-            mimeMessageHelper.addAttachment(fileSystemResource.getFilename(), file);
+            mimeMessageHelper.addAttachment(Objects.requireNonNull(fileSystemResource.getFilename()), file);
             mailSender.send(mimeMessage);
             logger.info("Email sent successfully to " + to + " with attachment");
         } catch (MessagingException e) {
@@ -93,20 +94,18 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setFrom("sendmailtestanish@gmail.com");
             mimeMessageHelper.setTo(to);
+            mimeMessageHelper.setText(message, true);
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(message);
 
 //            attachment for input file
-            File file = new File("src/main/resources/email/test.png");
+            File file = new File("/Users/anishmandal/Downloads/projects/spring/email-project/emailservice/src/main/resources/static/assign.png");
             Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             FileSystemResource fileSystemResource = new FileSystemResource(file);
-            mimeMessageHelper.addAttachment(fileSystemResource.getFilename(), fileSystemResource);
+            mimeMessageHelper.addAttachment(Objects.requireNonNull(fileSystemResource.getFilename()), fileSystemResource);
 
             mailSender.send(mimeMessage);
             logger.info("Email sent successfully to " + to + " with attachment");
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (MessagingException | IOException e) {
             throw new RuntimeException(e);
         }
     }

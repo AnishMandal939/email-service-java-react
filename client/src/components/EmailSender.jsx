@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { sendEmail } from "../services/email.service";
 import { handleCustomToast } from "../shared/customToast/handleCustomToast";
 import { CustomLoader } from "../shared/loader/CustomLoader";
+import { Editor } from "@tinymce/tinymce-react";
 
 export const EmailSender = () => {
   const [emailData, setEmailData] = useState({
@@ -10,6 +11,7 @@ export const EmailSender = () => {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const editorRef = useRef(null);
 
   function handleFieldChange(e, name) {
     setEmailData({ ...emailData, [name]: e.target.value });
@@ -34,7 +36,6 @@ export const EmailSender = () => {
         subject: "",
         message: "",
       });
-
       handleCustomToast(
         "success",
         `Email sent to ${emailData?.to} successfully!!`
@@ -43,9 +44,8 @@ export const EmailSender = () => {
     } catch (error) {
       console.log(error);
       handleCustomToast("error", `Email not sent`);
-    }
-    finally{
-        setLoading(false);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -59,7 +59,7 @@ export const EmailSender = () => {
   }
   return (
     <div className="w-full min-h-screen flex justify-center items-center">
-      <div className="email_card md:w-1/3 w-full -mt-10 mx-4 md:mx-0 border shadow p-4 rounded-lg">
+      <div className="email_card md:w-1/2 w-full -mt-10 mx-4 md:mx-0 border shadow p-4 rounded-lg">
         <h1 className="text-3xl">Email Sender</h1>
         <p className="text-gray--700">
           Send email to your favorite person with your own app
@@ -102,7 +102,7 @@ export const EmailSender = () => {
             </div>
           </div>
           <div className="input__field mt-4">
-            <div className="mb-5">
+            {/* <div className="mb-5">
               <label
                 htmlFor="message"
                 className="block mb-2 text-sm font-medium dark:text-white"
@@ -117,7 +117,94 @@ export const EmailSender = () => {
                 className="block p-2.5 w-full text-sm bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Write your thoughts here..."
               ></textarea>
-            </div>
+            </div> */}
+            <label
+              htmlFor="message"
+              className="block mb-2 text-sm font-medium dark:text-white"
+            >
+              Enter your message
+            </label>
+            <Editor
+              ref={editorRef}
+              apiKey={process.env.REACT_APP_TINYMICE_API_KEY}
+              onInit={(evt, editor) => (editor.current = editor)}
+              // initialValue={emailData?.message}
+              onEditorChange={(event) => {
+                setEmailData({ ...emailData, message: event });
+              }}
+              value={emailData?.message}
+              // init={{
+              //   menubar: true,
+              //   a11y_advanced_options: true,
+              //   selector: "textarea",
+              //   plugins:
+              //     "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown",
+              //   toolbar:
+              //     "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+              //   tinycomments_mode: "embedded",
+              //   tinycomments_author: "Author name",
+              //   mergetags_list: [
+              //     { value: "First.Name", title: "First Name" },
+              //     { value: "Email", title: "Email" },
+              //   ],
+              //   ai_request: (request, respondWith) =>
+              //     respondWith.string(() =>
+              //       Promise.reject("See docs to implement AI Assistant")
+              //     ),
+              // }}
+              init={{
+                height: 300,
+                menubar: true,
+                plugins: [
+                  "advcode",
+                  "advlist",
+                  "advtable",
+                  "anchor",
+                  "autocorrect",
+                  "autolink",
+                  "autosave",
+                  "casechange",
+                  "charmap",
+                  "checklist",
+                  "codesample",
+                  "directionality",
+                  "editimage",
+                  "emoticons",
+                  "export",
+                  "footnotes",
+                  "formatpainter",
+                  "help",
+                  "image",
+                  "insertdatetime",
+                  "link",
+                  "linkchecker",
+                  "lists",
+                  "media",
+                  "mediaembed",
+                  "mergetags",
+                  "nonbreaking",
+                  "pagebreak",
+                  "permanentpen",
+                  "powerpaste",
+                  "searchreplace",
+                  "table",
+                  "tableofcontents",
+                  "tinymcespellchecker",
+                  "typography",
+                  "visualblocks",
+                  "visualchars",
+                  "wordcount",
+                  "wordcount",
+                  "formatpainter",
+                ],
+                advcode_inline: true,
+                a11y_advanced_options: true,
+                toolbar:
+                  "undo redo spellcheckdialog  | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | align lineheight checklist bullist numlist | code",
+                content_style:
+                  "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+              }}
+            />
           </div>
           <div className="input__field mt-4">
             <div className="flex items-center justify-center w-full">
@@ -156,13 +243,15 @@ export const EmailSender = () => {
           {/* buttons */}
           {loading && <CustomLoader message="Sending E-mail" />}
           <div className="button__container mt-4 flex justify-center gap-2">
-            <button disabled={loading}
+            <button
+              disabled={loading}
               type="submit"
               className="text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 disabled:text-gray-200 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Send Email
             </button>
-            <button disabled={loading}
+            <button
+              disabled={loading}
               onClick={(e) => handleClearField(e)}
               className="text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 disabled:text-gray-200 disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
             >

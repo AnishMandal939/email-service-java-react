@@ -4,12 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.anish.emailservice.helper.Message;
 import com.anish.emailservice.services.EmailService;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
 
 @SpringBootTest
 public class EmailSenderTest {
@@ -40,5 +42,23 @@ public class EmailSenderTest {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // receiving email test
+    @Test
+    void getInbox(){
+        emailService.getInboxMessages();
+         List<Message> inboxMessages =  emailService.getInboxMessages();
+        // for (Message message: inboxMessages){
+        //     System.out.println(message);
+        // }
+         inboxMessages.forEach(item->{
+             System.out.println(item.getSubjects());
+             System.out.println(item.getContent());
+             System.out.println(item.getFiles());
+             System.out.println("-----");
+
+         });
+
     }
 }

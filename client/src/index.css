@@ -141,7 +141,7 @@ textarea{
     position: relative;
     display: inline-block;
     width: 60px;
-    height: 20px;
+    height: 26px;
   }
   
   .switch input {
@@ -164,9 +164,9 @@ textarea{
   .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
-    left: 8px;
+    height: 23px;
+    width: 22px;
+    left: 7px;
     /* bottom: 0px; */
     background-color: white;
     transition: .4s;
